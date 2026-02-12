@@ -22,7 +22,7 @@ jobs:
       - run: echo "DOMAIN=$PRODUCTION_DOMAIN"
       - run: npm run build
         env:
-          PRODUCTION_DOMAIN: ${{ secrets.PRODUCTION_DOMAIN }}
+          PRODUCTION_DOMAIN: https://d2ictlrj3m1zhh.cloudfront.net
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
