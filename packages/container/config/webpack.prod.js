@@ -3,18 +3,29 @@ const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPl
 const commonConfig = require('./webpack.common');
 const packageJson = require('../package.json');
 
-const domain = process.env.PRODUCTION_DOMAIN;
+let domain = process.env.PRODUCTION_DOMAIN;
+// guard against values like undefined, 'undefined', null, or empty string
+if (!domain || domain === 'undefined' || domain === 'null') {
+  domain = 'http://localhost:8081';
+}
+// ensure protocol
+if (!/^https?:\/\//i.test(domain)) {
+  domain = `http://${domain}`;
+}
+// remove trailing slash to avoid double-slash in remote URL
+domain = domain.replace(/\/+$/, '');
 
 const prodConfig = {
   mode: 'production',
   output: {
     filename: '[name].[contenthash].js',
-    publicPath: '/container/latest/',
+    publicPath: '/',
   },
   plugins: [
     new ModuleFederationPlugin({
       name: 'container',
       remotes: {
+        // use absolute URL so Module Federation injects a full script src
         marketing: `marketing@${domain}/marketing/latest/remoteEntry.js`,
       },
       shared: packageJson.dependencies,
